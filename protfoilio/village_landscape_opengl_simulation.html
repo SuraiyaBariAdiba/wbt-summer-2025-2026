@@ -1,0 +1,279 @@
+
+<style>
+  canvas { display: block; border-radius: 8px; }
+  #controls {
+    display: flex; gap: 8px; flex-wrap: wrap; padding: 8px 0 0;
+    font-size: 13px; color: var(--color-text-secondary);
+  }
+  button {
+    font-size: 12px; padding: 4px 10px; cursor: pointer;
+    border-radius: 6px; border: 0.5px solid var(--color-border-secondary);
+    background: var(--color-background-secondary); color: var(--color-text-primary);
+  }
+  button:hover { background: var(--color-background-tertiary); }
+  #speed-label { align-self: center; }
+</style>
+<canvas id="c" width="1000" height="600" style="width:100%; border-radius:8px;"></canvas>
+<div id="controls">
+  <button onclick="nightMode=false">☀ Day (D)</button>
+  <button onclick="nightMode=true">🌙 Night (N)</button>
+  <button onclick="planeSpeed=Math.max(0.5,planeSpeed-0.5)">− Slower</button>
+  <button onclick="planeSpeed+=0.5">+ Faster</button>
+  <button onclick="planeSpeed=0">⏸ Stop (S)</button>
+  <button onclick="planeSpeed=2.5">▶ Reset (R)</button>
+  <span id="speed-label"></span>
+</div>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = 1000, H = 600;
+let planeX = -200, planeSpeed = 2.5, nightMode = false;
+
+function drawCircle(cx, cy, r) {
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+}
+
+function drawCloud(x, y) {
+  ctx.fillStyle = nightMode ? '#888' : '#fff';
+  drawCircle(x, y, 35); drawCircle(x-35, y-5, 28);
+  drawCircle(x+35, y-5, 28); drawCircle(x, y+22, 24);
+}
+
+function drawTree(x, y) {
+  ctx.fillStyle = '#73390D';
+  ctx.fillRect(x, H-y-100, 20, 100);
+  ctx.fillStyle = nightMode ? '#0D590D' : '#1A8C1A';
+  drawCircle(x+10, H-y-130, 45);
+  drawCircle(x-25, H-y-110, 35);
+  drawCircle(x+45, H-y-110, 35);
+  ctx.fillStyle = nightMode ? '#147314' : '#33B21A';
+  drawCircle(x+10, H-y-95, 30);
+}
+
+function drawHouse(x, y) {
+  ctx.fillStyle = '#FFCC33';
+  ctx.fillRect(x, H-y-80, 120, 80);
+  ctx.fillStyle = '#E63300';
+  ctx.beginPath(); ctx.moveTo(x-10, H-y-80);
+  ctx.lineTo(x+60, H-y-140); ctx.lineTo(x+130, H-y-80);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#663300';
+  ctx.fillRect(x+45, H-y-50, 30, 50);
+}
+
+function drawMountain(x1,y1,x2,y2,x3,y3) {
+  ctx.fillStyle = nightMode ? '#144014' : '#268C26';
+  ctx.beginPath();
+  ctx.moveTo(x1, H-y1); ctx.lineTo(x2, H-y2);
+  ctx.lineTo(x3, H-y3); ctx.closePath(); ctx.fill();
+}
+
+function drawPlane(px, py) {
+  const sc = 180;
+  ctx.save();
+  ctx.translate(px, H - py);
+  ctx.scale(sc, -sc);
+
+  const noseW = 0.22, bodyW = 0.45;
+  const tailW = (noseW + bodyW) * 0.25;
+  const bodyH = 0.09;
+  const tailEnd = 0, bodyStart = tailW, noseStart = tailW + bodyW;
+  const PI2 = Math.PI * 2;
+
+  const finR = 51/255, finG = 77/255, finB = 230/255;
+
+  // Right top wing
+  ctx.fillStyle = `rgb(${51},${77},${230})`;
+  const rwRB = bodyStart + bodyW*0.43, rwRF = rwRB+0.17;
+  const rwTB = rwRB - 0.12, rwTF = rwTB+0.04;
+  const rwTY = bodyH*2.3;
+  ctx.beginPath();
+  ctx.moveTo(rwRB, bodyH*0.4); ctx.lineTo(rwRF, bodyH*0.4);
+  ctx.lineTo(rwTF, rwTY); ctx.lineTo(rwTB, rwTY); ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 0.005; ctx.stroke();
+
+  // Landing gear - nose
+  ctx.strokeStyle = '#666'; ctx.lineWidth = 0.008;
+  ctx.beginPath();
+  ctx.moveTo(noseStart + noseW*0.45, -bodyH*0.4);
+  ctx.lineTo(noseStart + noseW*0.45, -bodyH*0.4 - 0.10); ctx.stroke();
+  ctx.fillStyle = '#1a1a1a';
+  ctx.beginPath(); ctx.arc(noseStart+noseW*0.45, -bodyH*0.4-0.10, 0.022, 0, PI2); ctx.fill();
+
+  // Landing gear - main
+  ctx.beginPath();
+  ctx.moveTo(bodyStart + bodyW*0.20, -bodyH);
+  ctx.lineTo(bodyStart + bodyW*0.20, -bodyH-0.05); ctx.stroke();
+  ctx.fillStyle = '#1a1a1a';
+  ctx.beginPath(); ctx.arc(bodyStart+bodyW*0.20, -bodyH-0.05, 0.026, 0, PI2); ctx.fill();
+
+  // Tail fin
+  ctx.fillStyle = `rgb(51,77,230)`;
+  ctx.beginPath();
+  ctx.moveTo(bodyStart, 0); ctx.lineTo(bodyStart-0.25*0.5, bodyH+0.05*0.5);
+  ctx.lineTo(bodyStart-0.35*0.5, bodyH+0.23*0.5); ctx.lineTo(bodyStart-0.12*0.5, bodyH+0.23*0.5);
+  ctx.closePath(); ctx.fill();
+
+  // Body
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.moveTo(tailEnd, 0.04); ctx.lineTo(bodyStart, bodyH);
+  ctx.lineTo(noseStart, bodyH); ctx.lineTo(noseStart, -bodyH);
+  ctx.lineTo(bodyStart, -bodyH); ctx.lineTo(tailEnd, 0.02);
+  ctx.closePath(); ctx.fill();
+
+  // Nose Bezier
+  const cx2 = [noseStart, noseStart+noseW, noseStart+noseW, noseStart];
+  const cy2 = [bodyH, bodyH*0.4, -bodyH*0.3, -bodyH];
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.moveTo(noseStart, bodyH);
+  for (let i = 0; i <= 20; i++) {
+    const t = i/20;
+    const bx = Math.pow(1-t,3)*cx2[0]+3*t*Math.pow(1-t,2)*cx2[1]+3*t*t*(1-t)*cx2[2]+t*t*t*cx2[3];
+    const by = Math.pow(1-t,3)*cy2[0]+3*t*Math.pow(1-t,2)*cy2[1]+3*t*t*(1-t)*cy2[2]+t*t*t*cy2[3];
+    ctx.lineTo(bx, by);
+  }
+  ctx.closePath(); ctx.fill();
+
+  // Outline
+  ctx.strokeStyle = 'rgba(0,0,0,0.25)'; ctx.lineWidth = 0.003;
+  ctx.beginPath();
+  ctx.moveTo(tailEnd, 0.04); ctx.lineTo(bodyStart, bodyH); ctx.lineTo(noseStart, bodyH);
+  for (let i = 0; i <= 20; i++) {
+    const t = i/20;
+    ctx.lineTo(
+      Math.pow(1-t,3)*cx2[0]+3*t*Math.pow(1-t,2)*cx2[1]+3*t*t*(1-t)*cx2[2]+t*t*t*cx2[3],
+      Math.pow(1-t,3)*cy2[0]+3*t*Math.pow(1-t,2)*cy2[1]+3*t*t*(1-t)*cy2[2]+t*t*t*cy2[3]
+    );
+  }
+  ctx.lineTo(noseStart, -bodyH); ctx.lineTo(bodyStart, -bodyH); ctx.lineTo(tailEnd, 0.02);
+  ctx.closePath(); ctx.stroke();
+
+  // Cockpit window
+  ctx.fillStyle = '#333';
+  ctx.beginPath();
+  ctx.moveTo(noseStart+noseW*0.25, 0); ctx.lineTo(noseStart+noseW*0.65, 0);
+  ctx.lineTo(noseStart+noseW*0.50, bodyH*0.55); ctx.lineTo(noseStart+noseW*0.20, bodyH*0.70);
+  ctx.closePath(); ctx.fill();
+
+  // Passenger windows
+  const winStartY = bodyH*0.20;
+  const doorX = noseStart - 0.05;
+  ctx.fillStyle = '#666';
+  for (let i = 0; i < 6; i++) {
+    const winX = doorX - 0.06 - i*0.055;
+    if (winX > bodyStart + 0.02) {
+      ctx.beginPath();
+      ctx.ellipse(winX, winStartY, 0.012, 0.016, 0, 0, PI2);
+      ctx.fill();
+    }
+  }
+
+  // Door
+  ctx.strokeStyle = '#888'; ctx.lineWidth = 0.004;
+  ctx.strokeRect(doorX, -bodyH*0.50, 0.028, bodyH);
+
+  // Bottom wing
+  const wRB = bodyStart+bodyW*0.42, wRF = wRB+0.15;
+  const wTB = wRB-0.12, wTF = wTB+0.05;
+  const wTY = -bodyH*1.5, wRY = -bodyH*0.2;
+  ctx.fillStyle = `rgb(51,77,230)`;
+  ctx.beginPath();
+  ctx.moveTo(wRB, wRY); ctx.lineTo(wRF, wRY);
+  ctx.lineTo(wTF, wTY); ctx.lineTo(wTB, wTY); ctx.closePath();
+  ctx.fill();
+
+  // Engine
+  const engX = wRB+0.02, engW = 0.08, engH2 = bodyH*0.60, engY = wRY-bodyH*0.75;
+  ctx.fillStyle = '#d8d8d8';
+  ctx.fillRect(engX, engY, engW, engH2);
+  ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 0.003;
+  ctx.strokeRect(engX, engY, engW, engH2);
+  // Engine intake
+  ctx.fillStyle = '#404040';
+  ctx.beginPath();
+  ctx.moveTo(engX+engW, engY); ctx.lineTo(engX+engW+0.012, engY+engH2*0.08);
+  ctx.lineTo(engX+engW+0.012, engY+engH2*0.92); ctx.lineTo(engX+engW, engY+engH2);
+  ctx.closePath(); ctx.fill();
+
+  ctx.restore();
+}
+
+function drawRunway() {
+  ctx.fillStyle = nightMode ? '#4D3300' : '#CC8019';
+  ctx.fillRect(0, H-120, W, 60);
+  // center line
+  ctx.strokeStyle = nightMode ? '#664400' : '#fff';
+  ctx.lineWidth = 4; ctx.setLineDash([40,30]);
+  ctx.beginPath(); ctx.moveTo(0, H-90); ctx.lineTo(W, H-90); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawStars() {
+  if (!nightMode) return;
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  const stars = [[80,520],[150,550],[300,530],[450,560],[600,520],[720,540],[900,510],[50,490],[250,575],[500,505],[800,565],[950,495]];
+  for (const [sx,sy] of stars) {
+    ctx.beginPath(); ctx.arc(sx,sy,1.5,0,Math.PI*2); ctx.fill();
+  }
+}
+
+function render() {
+  ctx.clearRect(0, 0, W, H);
+
+  // Sky
+  const skyGrad = ctx.createLinearGradient(0, H, 0, H/2);
+  if (nightMode) {
+    skyGrad.addColorStop(0, '#050525');
+    skyGrad.addColorStop(1, '#0A0A3A');
+  } else {
+    skyGrad.addColorStop(0, '#4499FF');
+    skyGrad.addColorStop(1, '#AADDFF');
+  }
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  drawStars();
+
+  // Ground
+  ctx.fillStyle = nightMode ? '#143D14' : '#59BF26';
+  ctx.fillRect(0, 0, W, 250);
+
+  drawMountain(80,0,250,200,450,0);
+  drawMountain(300,0,500,170,700,0);
+  drawMountain(650,0,850,210,1000,0);
+
+  // Sun/Moon
+  if (nightMode) {
+    ctx.fillStyle = '#E8E8F0';
+    drawCircle(820, H-500, 40);
+  } else {
+    ctx.fillStyle = '#FFE600';
+    drawCircle(820, H-500, 50);
+  }
+
+  drawCloud(220, H-420);
+  drawCloud(650, H-400);
+
+  drawTree(40, 70); drawTree(180, 70);
+  drawTree(820, 70); drawTree(930, 70);
+
+  drawHouse(350, 60); drawHouse(550, 60);
+
+  drawRunway();
+
+  drawPlane(planeX, 450);
+
+  document.getElementById('speed-label').textContent = `Speed: ${planeSpeed.toFixed(1)}`;
+}
+
+function loop() {
+  planeX += planeSpeed;
+  if (planeX > 1200) planeX = -250;
+  render();
+  requestAnimationFrame(loop);
+}
+
+loop();
+</script>

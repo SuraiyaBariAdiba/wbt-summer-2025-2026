@@ -1,0 +1,60 @@
+<!DOCTYPE> <html> 
+    <head>
+        <title> Contact Information </title>
+    </head>
+    <body>
+            <form method="post">
+                <fieldset>
+                    <legend>Contact Information</legend>
+                    <table>
+                        <tr>
+                            <td><label for="firstName">First Name:</label></td>
+                            <td><input type="text" id="firstName" name="firstName"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="lastName">Last Name:</label></td>
+                            <td><input type="text" id="lastName" name="lastName"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="email">Email:</label></td>
+                            <td><input type="email" id="email" name="email"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="gender">Gender:</label></td>
+                            <td>
+                                <input type="radio" id="male" name="gender" value="male">Male
+                                
+                                <input type="radio" id="female" name="gender" value="female">Female
+                                
+                                </td>
+                            
+                        </tr>
+                        <tr>
+                            <td><label>Skills:</label></td>
+                            <td>
+                                <input type="checkbox" value="web development">WEB DEBELOPMENT
+                                <input type="checkbox" value="al/ml">AI/ML
+                                <input type="checkbox" value="data science">Data Science
+                                <input type="checkbox" value="backend">Backend 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="reason">Reason for Contact:</label></td>
+                            <td>
+                             <select id ="reason" name="reason">
+                                    <option value="project">Project</option>
+                                    <option value="job">JOB</option>
+                                    <option value="thesis">Thesis</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="submit" value="Register">
+                                <input type="reset" value="Reset">
+                            </td>
+                        </tr>
+                    </table>
+        </body>
+</html>

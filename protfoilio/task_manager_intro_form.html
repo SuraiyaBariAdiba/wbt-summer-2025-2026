@@ -1,0 +1,133 @@
+
+<style>
+  .win-frame {
+    background: #e8d5c0;
+    border: 1.5px solid #b89a7a;
+    border-radius: 6px;
+    overflow: hidden;
+    width: 520px;
+    margin: 1rem auto;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .title-bar {
+    background: #c0392b;
+    padding: 6px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .title-bar span { color: #fff; font-size: 13px; font-weight: 500; }
+  .title-bar-btns { display: flex; gap: 6px; }
+  .tb-btn {
+    width: 13px; height: 13px; border-radius: 50%;
+    border: none; cursor: default;
+  }
+  .tb-close { background: #ff5f57; }
+  .tb-min { background: #febc2e; }
+  .tb-max { background: #28c840; }
+  .form-body {
+    padding: 24px 48px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .app-title {
+    font-size: 22px;
+    font-weight: 500;
+    color: #2c2c2a;
+    margin-bottom: 4px;
+  }
+  .tagline {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 13px;
+    color: #5F5E5A;
+    margin-bottom: 24px;
+  }
+  .field-label {
+    align-self: flex-start;
+    font-size: 14px;
+    font-weight: 500;
+    color: #2c2c2a;
+    margin-bottom: 5px;
+    margin-top: 14px;
+  }
+  .field-label:first-of-type { margin-top: 0; }
+  .form-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #b89a7a;
+    border-radius: 4px;
+    background: #fff;
+    color: #696969;
+    outline: none;
+  }
+  .form-input:focus { border-color: #c0392b; box-shadow: 0 0 0 2px rgba(192,57,43,0.15); }
+  .show-pass-row {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 8px;
+    font-size: 13px;
+    font-style: italic;
+    color: #2c2c2a;
+    cursor: pointer;
+    user-select: none;
+  }
+  .show-pass-row input { cursor: pointer; }
+  .login-btn {
+    margin-top: 20px;
+    background: #FF8080;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 40px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    width: 160px;
+  }
+  .login-btn:hover { background: #e86060; }
+  .signup-row {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #2c2c2a;
+    font-style: italic;
+  }
+  .signup-row a { color: #00008B; font-style: normal; font-weight: 500; cursor: pointer; }
+</style>
+
+<div class="win-frame">
+  <div class="title-bar">
+    <span>Task Manager</span>
+    <div class="title-bar-btns">
+      <div class="tb-btn tb-close"></div>
+      <div class="tb-btn tb-min"></div>
+      <div class="tb-btn tb-max"></div>
+    </div>
+  </div>
+  <div class="form-body">
+    <div class="app-title">Task Manager</div>
+    <div class="tagline">Plan your tasks, Organize your life</div>
+
+    <div class="field-label" style="align-self:flex-start;width:100%;">Email:</div>
+    <input class="form-input" type="email" id="emailField" placeholder="Enter your email" />
+
+    <div class="field-label" style="align-self:flex-start;width:100%;">Password:</div>
+    <input class="form-input" type="password" id="passField" placeholder="Enter your password" />
+
+    <label class="show-pass-row">
+      <input type="checkbox" id="showPassCb" onchange="
+        document.getElementById('passField').type = this.checked ? 'text' : 'password'
+      "> Show Password
+    </label>
+
+    <button class="login-btn">Log In</button>
+
+    <div class="signup-row">New User? <a>Sign Up</a></div>
+  </div>
+</div>

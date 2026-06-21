@@ -1,0 +1,116 @@
+
+<style>
+  .win-frame {
+    width: 550px; height: 550px; margin: 1rem auto;
+    background: #DC3545;
+    border: 1.5px solid #a02030;
+    border-radius: 4px;
+    font-family: Arial, sans-serif;
+    position: relative;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  .title-bar {
+    background: #b02030;
+    padding: 6px 12px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .title-bar span { color: #fff; font-size: 13px; font-weight: 500; letter-spacing: 1px; }
+  .title-btns { display: flex; gap: 6px; }
+  .tb { width: 13px; height: 13px; border-radius: 50%; border: none; }
+  .tb-c { background: #ff5f57; } .tb-m { background: #febc2e; } .tb-x { background: #28c840; }
+  .form-area { padding: 0; position: relative; width: 100%; height: calc(100% - 30px); }
+  .row { position: absolute; display: flex; align-items: center; }
+  label.lbl {
+    position: absolute; color: #fff;
+    font-family: Arial, sans-serif; font-weight: bold; font-size: 15px;
+  }
+  input.tf {
+    position: absolute;
+    width: 150px; height: 25px;
+    border: 1px solid #aaa; border-radius: 2px;
+    padding: 2px 6px; font-size: 13px; box-sizing: border-box;
+    background: #fff; color: #333;
+  }
+  input.tf:disabled { background: #e9e9e9; color: #555; }
+  .btn {
+    position: absolute; height: 30px; width: 100px;
+    border: 1px solid #ccc; border-radius: 3px;
+    background: #f0f0f0; font-size: 13px; cursor: pointer;
+  }
+  .btn:hover { background: #ddd; }
+  #msgBox {
+    display: none;
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff; border: 1px solid #999;
+    border-radius: 4px; padding: 20px 28px;
+    text-align: center; z-index: 10; min-width: 220px;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+  }
+  #msgBox p { margin: 0 0 14px; font-size: 14px; color: #222; }
+  #msgBox button { padding: 4px 20px; font-size: 13px; cursor: pointer; }
+  #msgTitle { font-weight: bold; font-size: 13px; color: #555; margin-bottom: 6px; }
+</style>
+
+<div class="win-frame">
+  <div class="title-bar">
+    <span>WITHDRAW</span>
+    <div class="title-btns">
+      <div class="tb tb-c"></div>
+      <div class="tb tb-m"></div>
+      <div class="tb tb-x"></div>
+    </div>
+  </div>
+  <div class="form-area">
+    <label class="lbl" style="left:50px;top:50px;">Withdraw Amount:</label>
+    <input class="tf" id="withdrawTf" style="left:220px;top:50px;" type="number" placeholder="0.00" />
+
+    <label class="lbl" style="left:50px;top:100px;">Net Balance:</label>
+    <input class="tf" id="netTf" style="left:220px;top:100px;" value="1000.0" disabled />
+
+    <label class="lbl" id="currentLabel" style="left:50px;top:150px;">Current Balance: $1000.0</label>
+
+    <button class="btn" style="left:50px;top:200px;" onclick="doConfirm()">Confirm</button>
+    <button class="btn" style="left:200px;top:200px;" onclick="doCancel()">Cancel</button>
+    <button class="btn" style="left:350px;top:200px;" onclick="doBack()">Back</button>
+  </div>
+
+  <div id="msgBox">
+    <div id="msgTitle"></div>
+    <p id="msgText"></p>
+    <button onclick="document.getElementById('msgBox').style.display='none'">OK</button>
+  </div>
+</div>
+
+<script>
+  let balance = 1000.0;
+
+  function showMsg(text, title) {
+    document.getElementById('msgTitle').textContent = title || '';
+    document.getElementById('msgText').textContent = text;
+    document.getElementById('msgBox').style.display = 'block';
+  }
+
+  function doConfirm() {
+    const input = document.getElementById('withdrawTf').value;
+    const amt = parseFloat(input);
+    if (isNaN(amt)) { showMsg('Please enter a valid number', 'Error'); return; }
+    if (amt <= 0) { showMsg('Enter a valid amount', 'Error'); return; }
+    if (amt > balance) { showMsg('Insufficient Balance!', 'Error'); return; }
+    balance -= amt;
+    balance = Math.round(balance * 100) / 100;
+    document.getElementById('netTf').value = balance.toFixed(1);
+    document.getElementById('currentLabel').textContent = 'Current Balance: $' + balance.toFixed(1);
+    document.getElementById('withdrawTf').value = '';
+    showMsg('Withdrawal Successful!', '');
+  }
+
+  function doCancel() {
+    document.getElementById('withdrawTf').value = '';
+  }
+
+  function doBack() {
+    showMsg('Back button clicked. (Would close window in real app.)', '');
+  }
+</script>
